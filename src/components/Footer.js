@@ -10,10 +10,10 @@ export default function Footer() {
             className="w-6 h-6 rounded-md flex items-center justify-center font-bold text-xs"
             style={{ backgroundColor: '#86efac', color: '#000000' }}
           >
-            A
+            H
           </div>
           <span className="font-mono text-xs" style={{ color: '#71717a' }}>
-            © {new Date().getFullYear()} Ahmed Ali. All rights reserved.
+            © {new Date().getFullYear()} Hassan Yousuf. All rights reserved.
           </span>
         </div>
         <div className="flex items-center gap-1 font-mono text-xs" style={{ color: '#71717a' }}>

@@ -346,7 +346,7 @@ export default function HeroEnhanced() {
                   <span className="available-dot" style={{ position: 'absolute', inset: 0, borderRadius: '9999px', background: '#4ade80', boxShadow: '0 0 8px rgba(74,222,128,0.6)' }} />
                   <span style={{ position: 'relative', width: 7, height: 7, borderRadius: '9999px', background: '#4ade80' }} />
                 </span>
-                <span style={{ fontSize: 10, fontFamily: 'monospace', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(134,239,172,0.9)' }}>Available for work</span>
+                <span  className="hidden sm:inline" style={{ fontSize: 10, fontFamily: 'monospace', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(134,239,172,0.9)' }}>Available for work</span>
               </div>
 
               {/* Greeting */}

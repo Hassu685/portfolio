@@ -224,7 +224,7 @@ export default function Contact() {
                         required
                         value={form.name}
                         onChange={(e) => setForm({ ...form, name: e.target.value })}
-                        placeholder="John Doe"
+                        placeholder="Hassan Yousuf"
                         className="w-full px-4 py-3 rounded-xl text-sm transition-all outline-none"
                         style={{
                           backgroundColor: '#111111',
@@ -243,7 +243,7 @@ export default function Contact() {
                         required
                         value={form.email}
                         onChange={(e) => setForm({ ...form, email: e.target.value })}
-                        placeholder="john@example.com"
+                        placeholder="hassan@example.com"
                         className="w-full px-4 py-3 rounded-xl text-sm transition-all outline-none"
                         style={{
                           backgroundColor: '#111111',
