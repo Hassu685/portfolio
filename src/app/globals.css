@@ -28,8 +28,17 @@ body {
   background: #050A14;
 }
 ::-webkit-scrollbar-thumb {
-  background: #6C63FF;
+  background: #4ade80;
   border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #86efac;
+}
+
+/* Firefox */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #4ade80 #050A14;
 }
 
 /* Cursor glow */
