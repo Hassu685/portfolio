@@ -1,6 +1,6 @@
 'use client'
 import { useRef, useEffect, useState } from 'react'
-import { Mail, MessageSquare, MapPin, Send, Github, Linkedin, Twitter } from 'lucide-react'
+import { Mail, MessageSquare, MapPin, Send, Github, Linkedin, Twitter, CheckCircle2 } from 'lucide-react'
 import emailjs from '@emailjs/browser'
 
 // ── EmailJS credentials — inhe apne values se replace karo ──
@@ -26,15 +26,24 @@ export default function Contact() {
 
   const [visible, setVisible] = useState(false)
   const [form, setForm] = useState({ name: '', email: '', message: '' })
+  const [focused, setFocused] = useState(null)
   const [status, setStatus] = useState('idle') // idle | sending | sent | error
 
   useEffect(() => {
+    const el = sectionRef.current
+    if (!el) return
     const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) setVisible(true) },
+      ([e]) => {
+        if (e.isIntersecting) {
+          setVisible(true)
+          obs.disconnect()
+        }
+      },
       { threshold: 0.1 }
     )
-    if (sectionRef.current) obs.observe(sectionRef.current)
-    return () => obs.disconnect()
+    obs.observe(el)
+    const fallback = setTimeout(() => setVisible(true), 1500)
+    return () => { obs.disconnect(); clearTimeout(fallback) }
   }, [])
 
   const handleSubmit = async (e) => {
@@ -56,80 +65,65 @@ export default function Contact() {
     }
   }
 
+  const inputBase =
+    'w-full px-4 py-3.5 rounded-xl text-sm bg-[#0d0d0d] border text-white placeholder:text-white/25 outline-none transition-all duration-300'
+
   return (
     <section
       id="contact"
-      className="py-28 relative"
+      className="relative py-24 md:py-32 bg-black overflow-hidden"
       ref={sectionRef}
-      style={{ backgroundColor: '#000000' }}
     >
-      {/* Green glow blob */}
-      <div
-        className="absolute top-0 left-1/2 -translate-x-1/2 lg:w-96 h-96 rounded-full blur-3xl pointer-events-none"
-        style={{ backgroundColor: 'rgba(134,239,172,0.06)' }}
-      />
+      {/* Ambient background, matches rest of site */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[480px] h-[480px] rounded-full bg-green-400/[0.06] blur-3xl pointer-events-none" />
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
+        backgroundImage:
+          'linear-gradient(rgba(255,255,255,.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.5) 1px, transparent 1px)',
+        backgroundSize: '48px 48px',
+      }} />
 
-      <div className="max-w-6xl mx-auto px-6">
+      <div className="max-w-6xl mx-auto px-6 relative">
 
         {/* ── Heading ── */}
-        <div className={`mb-16 text-center transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <p
-            className="mb-3 text-xs font-mono uppercase tracking-widest"
-            style={{ color: '#86efac' }}
-          >
+        <div
+          className={`mb-16 md:mb-20 text-center transition-all duration-700 ease-out ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`}
+        >
+          <p className="inline-flex items-center gap-2 text-green-400/85 text-[10px] font-mono mb-4 tracking-[.18em] uppercase before:content-[''] before:inline-block before:w-[22px] before:h-px before:bg-green-400/60 after:content-[''] after:inline-block after:w-[22px] after:h-px after:bg-green-400/60">
             Let&apos;s Talk
           </p>
-          <h2 className="font-bold text-4xl md:text-5xl mb-4" style={{ color: '#ffffff' }}>
+          <h2 className="font-display font-extrabold text-4xl md:text-5xl text-white tracking-tight mb-4">
             Get In{' '}
-            <span
-              style={{
-                background: 'linear-gradient(135deg, #86efac 0%, #4ade80 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}
-            >
+            <span className="bg-gradient-to-r from-green-300 via-green-400 to-green-300 bg-clip-text text-transparent bg-[length:200%_auto] animate-[shimmer_4s_ease_infinite]">
               Touch
             </span>
           </h2>
-          <p className="max-w-lg mx-auto text-sm" style={{ color: '#a1a1aa' }}>
-            Have a project in mind? Looking for a developer? Or just want to say hi?
-            My inbox is always open.
+          <p className="max-w-lg mx-auto text-sm text-white/50 font-body leading-relaxed">
+            Have a project in mind? Looking for a developer? Or just want to say hi —
+            my inbox is always open.
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-5 gap-8">
+        <div className="grid lg:grid-cols-5 gap-6 md:gap-8">
 
           {/* ── Left info ── */}
           <div
-            className={`lg:col-span-2 space-y-6 transition-all duration-700 delay-100 ${visible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'}`}
+            className={`lg:col-span-2 space-y-4 transition-all duration-700 ease-out delay-100 ${visible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'
+              }`}
           >
-            {contactInfo.map(({ icon: Icon, label, value, href }) => (
+            {contactInfo.map(({ icon: Icon, label, value, href }, idx) => (
               <a
                 key={label}
                 href={href}
-                className="flex items-center gap-4 p-5 rounded-xl border group transition-all"
-                style={{
-                  backgroundColor: '#0a0a0a',
-                  borderColor: '#1f1f1f',
-                }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(134,239,172,0.35)'}
-                onMouseLeave={e => e.currentTarget.style.borderColor = '#1f1f1f'}
+                className="group flex items-center gap-4 p-5 rounded-xl bg-[#0a0a0a] border border-green-900/30 hover:border-green-400/50 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_40px_-18px_rgba(74,222,128,.25)]"
+                style={{ transitionDelay: visible ? `${150 + idx * 90}ms` : '0ms' }}
               >
-                <div
-                  className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
-                  style={{ backgroundColor: 'rgba(134,239,172,0.08)', border: '1px solid rgba(134,239,172,0.2)' }}
-                >
-                  <Icon size={18} style={{ color: '#86efac' }} />
+                <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 bg-green-400/[0.08] border border-green-400/20 group-hover:bg-green-400/[0.14] group-hover:border-green-400/40 transition-all duration-300">
+                  <Icon size={17} className="text-green-400" />
                 </div>
-                <div>
-                  <p className="text-xs font-mono mb-0.5" style={{ color: '#71717a' }}>{label}</p>
-                  <p
-                    className="text-sm transition-colors"
-                    style={{ color: '#ffffff' }}
-                    onMouseEnter={e => e.target.style.color = '#86efac'}
-                    onMouseLeave={e => e.target.style.color = '#ffffff'}
-                  >
+                <div className="min-w-0">
+                  <p className="text-[11px] font-mono text-white/40 mb-0.5 tracking-wide uppercase">{label}</p>
+                  <p className="text-sm text-white/85 group-hover:text-green-400 transition-colors duration-300 truncate">
                     {value}
                   </p>
                 </div>
@@ -137,11 +131,8 @@ export default function Contact() {
             ))}
 
             {/* Socials */}
-            <div
-              className="p-5 rounded-xl border"
-              style={{ backgroundColor: '#0a0a0a', borderColor: '#1f1f1f' }}
-            >
-              <p className="text-xs font-mono mb-4" style={{ color: '#71717a' }}>Find me on</p>
+            <div className="p-5 rounded-xl bg-[#0a0a0a] border border-green-900/30">
+              <p className="text-[11px] font-mono text-white/40 mb-4 tracking-wide uppercase">Find me on</p>
               <div className="flex gap-3">
                 {socials.map(({ icon: Icon, label, href }) => (
                   <a
@@ -150,16 +141,7 @@ export default function Contact() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={label}
-                    className="w-10 h-10 rounded-lg border flex items-center justify-center transition-all hover:-translate-y-1"
-                    style={{ backgroundColor: '#111111', borderColor: '#1f1f1f', color: '#71717a' }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.color = '#86efac'
-                      e.currentTarget.style.borderColor = 'rgba(134,239,172,0.4)'
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.color = '#71717a'
-                      e.currentTarget.style.borderColor = '#1f1f1f'
-                    }}
+                    className="w-10 h-10 rounded-lg border border-green-900/40 bg-black flex items-center justify-center text-white/50 transition-all duration-300 hover:-translate-y-1 hover:text-green-400 hover:border-green-400/50"
                   >
                     <Icon size={16} />
                   </a>
@@ -168,117 +150,113 @@ export default function Contact() {
             </div>
 
             {/* Availability */}
-            <div
-              className="p-5 rounded-xl"
-              style={{ backgroundColor: 'rgba(134,239,172,0.04)', border: '1px solid rgba(134,239,172,0.2)' }}
-            >
-              <div className="flex items-center gap-2 mb-1">
-                <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: '#86efac' }} />
-                <span className="text-sm font-medium" style={{ color: '#86efac' }}>Available Now</span>
+            <div className="p-5 rounded-xl bg-green-400/[0.04] border border-green-400/20">
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-60" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400" />
+                </span>
+                <span className="text-sm font-medium text-green-400 font-display">Available Now</span>
               </div>
-              <p className="text-xs" style={{ color: '#71717a' }}>Open to freelance projects and full-time roles.</p>
+              <p className="text-xs text-white/45 font-body leading-relaxed">
+                Open to freelance projects and full-time roles.
+              </p>
             </div>
           </div>
 
           {/* ── Right form ── */}
           <div
-            className={`lg:col-span-3 transition-all duration-700 delay-200 ${visible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'}`}
+            className={`lg:col-span-3 transition-all duration-700 ease-out delay-200 ${visible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'
+              }`}
           >
-            <div
-              className="p-8 rounded-2xl border"
-              style={{ backgroundColor: '#0a0a0a', borderColor: '#1f1f1f' }}
-            >
+            <div className="relative p-6 sm:p-8 rounded-2xl bg-[#0a0a0a] border border-green-900/30 overflow-hidden">
+              {/* corner glow, matches project cards */}
+              <div className="pointer-events-none absolute -top-16 -right-16 w-40 h-40 rounded-full bg-green-400/10 blur-2xl" />
 
               {/* Success state */}
               {status === 'sent' ? (
-                <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <div
-                    className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
-                    style={{ backgroundColor: 'rgba(134,239,172,0.1)', border: '1px solid rgba(134,239,172,0.3)' }}
-                  >
-                    <Send size={24} style={{ color: '#86efac' }} />
+                <div className="relative flex flex-col items-center justify-center py-14 sm:py-16 text-center animate-[fadeIn_.5s_ease-out]">
+                  <div className="w-16 h-16 rounded-full flex items-center justify-center mb-5 bg-green-400/10 border border-green-400/30 animate-[popIn_.5s_cubic-bezier(0.34,1.56,0.64,1)]">
+                    <CheckCircle2 size={28} className="text-green-400" />
                   </div>
-                  <h3 className="font-semibold text-xl mb-2" style={{ color: '#ffffff' }}>Message Sent!</h3>
-                  <p className="text-sm" style={{ color: '#71717a' }}>
+                  <h3 className="font-display font-semibold text-xl text-white mb-2">Message Sent!</h3>
+                  <p className="text-sm text-white/45 font-body max-w-xs">
                     Thanks for reaching out. I&apos;ll get back to you within 24 hours.
                   </p>
                   <button
                     onClick={() => setStatus('idle')}
-                    className="mt-6 px-5 py-2 rounded-lg border text-sm transition-all"
-                    style={{ backgroundColor: '#111111', borderColor: '#1f1f1f', color: '#71717a' }}
-                    onMouseEnter={e => e.currentTarget.style.color = '#ffffff'}
-                    onMouseLeave={e => e.currentTarget.style.color = '#71717a'}
+                    className="mt-7 px-5 py-2.5 rounded-lg border border-green-900/40 bg-black text-white/60 text-sm font-body transition-all duration-300 hover:text-green-400 hover:border-green-400/50"
                   >
                     Send another message
                   </button>
                 </div>
 
               ) : (
-                <form ref={formRef} onSubmit={handleSubmit} className="space-y-5">
+                <form ref={formRef} onSubmit={handleSubmit} className="relative space-y-5">
                   <div className="grid sm:grid-cols-2 gap-5">
                     <div>
-                      <label className="block text-xs font-mono mb-2" style={{ color: '#71717a' }}>Your Name</label>
+                      <label className="block text-[11px] font-mono text-white/40 mb-2 tracking-wide uppercase">
+                        Your Name
+                      </label>
                       <input
                         type="text"
                         name="from_name"
                         required
                         value={form.name}
                         onChange={(e) => setForm({ ...form, name: e.target.value })}
+                        onFocus={() => setFocused('name')}
+                        onBlur={() => setFocused(null)}
                         placeholder="Hassan Yousuf"
-                        className="w-full px-4 py-3 rounded-xl text-sm transition-all outline-none"
-                        style={{
-                          backgroundColor: '#111111',
-                          border: '1px solid #1f1f1f',
-                          color: '#ffffff',
-                        }}
-                        onFocus={e => e.target.style.borderColor = 'rgba(134,239,172,0.5)'}
-                        onBlur={e => e.target.style.borderColor = '#1f1f1f'}
+                        className={`${inputBase} ${focused === 'name'
+                          ? 'border-green-400/60 shadow-[0_0_0_3px_rgba(74,222,128,.08)]'
+                          : 'border-green-900/30'
+                          }`}
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-mono mb-2" style={{ color: '#71717a' }}>Email Address</label>
+                      <label className="block text-[11px] font-mono text-white/40 mb-2 tracking-wide uppercase">
+                        Email Address
+                      </label>
                       <input
                         type="email"
                         name="from_email"
                         required
                         value={form.email}
                         onChange={(e) => setForm({ ...form, email: e.target.value })}
+                        onFocus={() => setFocused('email')}
+                        onBlur={() => setFocused(null)}
                         placeholder="hassan@example.com"
-                        className="w-full px-4 py-3 rounded-xl text-sm transition-all outline-none"
-                        style={{
-                          backgroundColor: '#111111',
-                          border: '1px solid #1f1f1f',
-                          color: '#ffffff',
-                        }}
-                        onFocus={e => e.target.style.borderColor = 'rgba(134,239,172,0.5)'}
-                        onBlur={e => e.target.style.borderColor = '#1f1f1f'}
+                        className={`${inputBase} ${focused === 'email'
+                          ? 'border-green-400/60 shadow-[0_0_0_3px_rgba(74,222,128,.08)]'
+                          : 'border-green-900/30'
+                          }`}
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-mono mb-2" style={{ color: '#71717a' }}>Message</label>
+                    <label className="block text-[11px] font-mono text-white/40 mb-2 tracking-wide uppercase">
+                      Message
+                    </label>
                     <textarea
                       name="message"
                       required
                       rows={6}
                       value={form.message}
                       onChange={(e) => setForm({ ...form, message: e.target.value })}
+                      onFocus={() => setFocused('message')}
+                      onBlur={() => setFocused(null)}
                       placeholder="Tell me about your project or just say hello..."
-                      className="w-full px-4 py-3 rounded-xl text-sm transition-all outline-none resize-none"
-                      style={{
-                        backgroundColor: '#111111',
-                        border: '1px solid #1f1f1f',
-                        color: '#ffffff',
-                      }}
-                      onFocus={e => e.target.style.borderColor = 'rgba(134,239,172,0.5)'}
-                      onBlur={e => e.target.style.borderColor = '#1f1f1f'}
+                      className={`${inputBase} resize-none ${focused === 'message'
+                        ? 'border-green-400/60 shadow-[0_0_0_3px_rgba(74,222,128,.08)]'
+                        : 'border-green-900/30'
+                        }`}
                     />
                   </div>
 
                   {/* Error message */}
                   {status === 'error' && (
-                    <p className="text-xs font-mono text-center" style={{ color: '#f87171' }}>
+                    <p className="text-xs font-mono text-center text-red-400/90 animate-[fadeIn_.3s_ease-out]">
                       Kuch masla ho gaya. Dobara try karo ya seedha email bhejo.
                     </p>
                   )}
@@ -286,13 +264,7 @@ export default function Contact() {
                   <button
                     type="submit"
                     disabled={status === 'sending'}
-                    className="w-full py-3.5 rounded-xl font-medium text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-                    style={{
-                      backgroundColor: '#86efac',
-                      color: '#000000',
-                    }}
-                    onMouseEnter={e => { if (status !== 'sending') e.currentTarget.style.backgroundColor = '#4ade80' }}
-                    onMouseLeave={e => { if (status !== 'sending') e.currentTarget.style.backgroundColor = '#86efac' }}
+                    className="group relative w-full py-3.5 rounded-xl font-display font-medium text-sm text-black bg-green-400 flex items-center justify-center gap-2 overflow-hidden transition-all duration-300 hover:bg-green-300 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-green-400"
                   >
                     {status === 'sending' ? (
                       <>
@@ -304,7 +276,7 @@ export default function Contact() {
                       </>
                     ) : (
                       <>
-                        <Send size={16} />
+                        <Send size={16} className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                         Send Message
                       </>
                     )}
@@ -315,6 +287,18 @@ export default function Contact() {
           </div>
         </div>
       </div>
+
+      <style>{`
+        @keyframes shimmer { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+        @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+        @keyframes popIn {
+          0% { opacity: 0; transform: scale(.6) }
+          100% { opacity: 1; transform: scale(1) }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+        }
+      `}</style>
     </section>
   )
 }
